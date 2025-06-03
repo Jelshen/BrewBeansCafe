@@ -1,0 +1,69 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Montserrat", sans-serif;
+
+  /* Coffee Theme Colors */
+  --color-primary: #6b4f4f; /* Rich Coffee Brown */
+  --color-accent: #dab49d; /* Warm Latte Beige */
+  --color-background: #fff8f0; /* Creamy Off-white */
+  --color-text: #3e2c2c; /* Deep Mocha */
+  --color-highlight: #a26769; /* Rosewood Pink */
+
+  /* Animation Easing */
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+}
+
+body,
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.carousel-container {
+  position: relative;
+}
+
+.multiple-carousel__arrow {
+  z-index: 50;
+}
+
+.custom-dot-list-style button {
+  border: none;
+  background: var(--color-primary) !important;
+  margin: 0 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+@media (min-width: 1800px) {
+  .custom-dot-list-style-home {
+    padding-bottom: 5% !important;
+  }
+}
+
+.react-multi-carousel-dot--active button {
+  background: var(--color-background) !important;
+}
+
+.react-multi-carousel-item {
+  display: flex;
+  justify-content: center;
+}
+
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  margin-left: -20px; /* gutter size offset */
+  width: auto;
+}
+.my-masonry-grid_column {
+  padding-left: 20px; /* gutter size */
+  background-clip: padding-box;
+}
