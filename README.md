@@ -75,13 +75,13 @@ pnpm install
 cd Frontend
 ```
 
-2. Install dependencies using pnpm:
+5. Install dependencies using pnpm:
 
 ```bash
 pnpm install
 ```
 
-3. Create a .env file:
+6. Create a .env file:
 
 ```env
 VITE_API_URL=http://localhost:3000 (replace the url with your hosting url)
@@ -89,7 +89,7 @@ VITE_MENU_IMAGE_URL=/src/assets/menu/webp/
 VITE_GALLERY_IMAGE_URL=/src/assets/gallery/webp/
 ```
 
-4. Start the development server:
+7. Start the development server:
 
 ```bash
 pnpm dev
