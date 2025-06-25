@@ -15,6 +15,15 @@ CREATE TABLE menus (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE admins (
+	admin_id SERIAL PRIMARY KEY,
+	username VARCHAR(50) NOT NULL,
+	password VARCHAR(100) NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+select * from admins
+
 -- Insert sample categories
 INSERT INTO categories (name) VALUES ('Coffee'), ('Pastry'), ('Tea'), ('Sandwich');
 

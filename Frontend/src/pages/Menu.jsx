@@ -1,9 +1,10 @@
+// Import libraries
 import React, { useState, useEffect, useMemo } from "react";
-import Swal from "sweetalert2";
+import { motion } from "framer-motion";
 
+// Import API and components
 import fetchMenu from "../api/FetchMenu.js";
 import fetchCategory from "../api/fetchCategory.js";
-
 import MenuCard from "../components/MenuCard.jsx";
 
 const Menu = () => {
@@ -62,8 +63,22 @@ const Menu = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  // Animation variants for page transitions
+  const pageVariants = {
+    initial: { opacity: 0, y: 30 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -30 },
+  };
+
   return (
-    <div className="text-[var(--color-accent)] backdrop-blur-md">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="text-[var(--color-accent)] backdrop-blur-md"
+    >
       <div className="flex flex-wrap lg:flex-row justify-end lg:justify-center px-4 pt-4 md:px-8 md:pt-8 lg:px-10 lg:pt-10 xl:px-20 xl:pt-20">
         <div className="lg:w-1/2 flex flex-col justify-center p-4 lg:p-0">
           <h1 className="text-2xl xl:text-4xl font-bold text-transparent bg-clip-text bg-linear-10 from-[var(--color-accent)] to-[var(--color-background)]">
@@ -107,10 +122,11 @@ const Menu = () => {
             price={item.menu_price}
             description={item.menu_description}
             category={categoryLookup[item.category_id] || "Uncategorized"}
+            noScale={false}
           />
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -27,7 +27,7 @@ const HomeCard = ({ image, name, description }) => {
 
         <a
           href="/menu"
-          className="text-sm active:text-[var(--color-primary)] mt-4 text-[var(--color-accent)] hover:text-[var(--color-primary)]"
+          className="text-xs active:text-[var(--color-primary)] mt-4 text-[var(--color-accent)] hover:text-[var(--color-primary)]"
         >
           Learn More
         </a>

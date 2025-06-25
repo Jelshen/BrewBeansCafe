@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 
 const Navbar = () => {
@@ -34,37 +35,21 @@ const Navbar = () => {
       {!isMobile ? (
         <nav className="w-full">
           <ul className="flex justify-end gap-10 text-sm lg:text-lg">
-            <li>
-              <a href="/" className="hover:text-[var(--color-highlight)]">
-                Home
-              </a>
-            </li>
-            <li>
-              <a href="/menu" className="hover:text-[var(--color-highlight)]">
-                Menu
-              </a>
-            </li>
-            <li>
-              <a href="/about" className="hover:text-[var(--color-highlight)]">
-                About
-              </a>
-            </li>
-            <li>
-              <a
-                href="/gallery"
-                className="hover:text-[var(--color-highlight)]"
-              >
-                Gallery
-              </a>
-            </li>
-            <li>
-              <a
-                href="/contact"
-                className="hover:text-[var(--color-highlight)]"
-              >
-                Contact
-              </a>
-            </li>
+            <Link to="/" className="hover:text-[var(--color-highlight)]">
+              Home
+            </Link>
+            <Link to="/menu" className="hover:text-[var(--color-highlight)]">
+              Menu
+            </Link>
+            <Link to="/about" className="hover:text-[var(--color-highlight)]">
+              About
+            </Link>
+            <Link to="/gallery" className="hover:text-[var(--color-highlight)]">
+              Gallery
+            </Link>
+            <Link to="/contact" className="hover:text-[var(--color-highlight)]">
+              Contact
+            </Link>
           </ul>
         </nav>
       ) : (
@@ -99,37 +84,41 @@ const Navbar = () => {
           >
             <nav className="py-7 mt-4 h-full">
               <ul className="flex flex-col place-items-end gap-4 p-16 text-lg">
-                <li>
-                  <a href="/" className="hover:text-[var(--color-accent)]">
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a href="/menu" className="hover:text-[var(--color-accent)]">
-                    Menu
-                  </a>
-                </li>
-                <li>
-                  <a href="/about" className="hover:text-[var(--color-accent)]">
-                    About
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/gallery"
-                    className="hover:text-[var(--color-accent)]"
-                  >
-                    Gallery
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/contact"
-                    className="hover:text-[var(--color-accent)]"
-                  >
-                    Contact
-                  </a>
-                </li>
+                <Link
+                  to="/"
+                  onClick={() => setMobileNavClick(!mobileNavClick)}
+                  className="hover:text-[var(--color-highlight)]"
+                >
+                  Home
+                </Link>
+                <Link
+                  to="/menu"
+                  onClick={() => setMobileNavClick(!mobileNavClick)}
+                  className="hover:text-[var(--color-highlight)]"
+                >
+                  Menu
+                </Link>
+                <Link
+                  to="/about"
+                  onClick={() => setMobileNavClick(!mobileNavClick)}
+                  className="hover:text-[var(--color-highlight)]"
+                >
+                  About
+                </Link>
+                <Link
+                  to="/gallery"
+                  onClick={() => setMobileNavClick(!mobileNavClick)}
+                  className="hover:text-[var(--color-highlight)]"
+                >
+                  Gallery
+                </Link>
+                <Link
+                  to="/contact"
+                  onClick={() => setMobileNavClick(!mobileNavClick)}
+                  className="hover:text-[var(--color-highlight)]"
+                >
+                  Contact
+                </Link>
               </ul>
             </nav>
           </div>

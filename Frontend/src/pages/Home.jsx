@@ -1,7 +1,13 @@
 import React from "react";
+
+// Import components
 import HomeCard from "../components/HomeCard.jsx";
-import { useState, useEffect } from "react";
 import fetchMenu from "../api/FetchMenu.js";
+
+// Import library
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
@@ -58,8 +64,21 @@ const Home = () => {
     },
   };
 
+  const pageVariants = {
+    initial: { opacity: 0, y: 30 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -30 },
+  };
+
   return (
-    <div className="flex flex-wrap md:flex-row justify-center lg:p-0 p-4">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="flex flex-wrap md:flex-row justify-center lg:p-0 p-4"
+    >
       {/* Header */}
       <div className="w-full lg:w-1/1 xl:w-3/7 flex-col text-lg p-4 md:p-8 lg:p-10 xl:p-20 justify-center">
         <h2 className="text-sm md:text-lg lg:text-2xl font-medium text-[var(--color-accent)]">
@@ -81,15 +100,14 @@ const Home = () => {
           savor the perfect cup of coffee.
         </p>
 
-        <button
-          className="mt-4 border-2 rounded-full px-4 border-[var(--color-background)] 
+        <Link to="/menu">
+          <button
+            className="mt-4 border-2 rounded-full px-4 border-[var(--color-background)] 
         text-[var(--color-background)] p-2 md:hover:scale-105 active:scale-105 transition-transform duration-100"
-          onClick={() => {
-            window.location.href = "/menu";
-          }}
-        >
-          <span className="text-sm md:text-md">Check Our Menu!</span>
-        </button>
+          >
+            <span className="text-sm md:text-md">Check Our Menu!</span>
+          </button>
+        </Link>
       </div>
 
       {/* Card Section */}
@@ -127,7 +145,7 @@ const Home = () => {
           </Carousel>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

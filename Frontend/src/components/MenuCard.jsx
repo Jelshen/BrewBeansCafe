@@ -3,13 +3,14 @@ import React from "react";
 const MENU_IMAGE_URL = `${import.meta.env.VITE_MENU_IMAGE_URL}`;
 
 const MenuCard = React.memo(
-  ({ id, image, name, price, description, category }) => {
+  ({ id, image, name, price, description, category, noScale = false }) => {
     return (
       <div>
         <div
-          className="relative bg-[var(--color-background)] rounded-xl shadow-lg 
+          className={`relative bg-[var(--color-background)] rounded-xl shadow-lg 
               overflow-hidden w-full h-68 lg:h-88
-              transition-transform hover:scale-103 duration-300"
+              transition-transform duration-300
+              ${noScale ? "" : "hover:scale-103"}`}
         >
           <img
             src={MENU_IMAGE_URL + image}

@@ -12,6 +12,17 @@ const fetchMenu = {
       throw new Error(error.response?.data?.message || "Failed to fetch menu");
     }
   },
+
+  postMenu: async ({ menuItem }) => {
+    try {
+      const response = await axios.post(`${API_URL}/menu`, menuItem);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to add menu item"
+      );
+    }
+  },
 };
 
 export default fetchMenu;

@@ -1,20 +1,34 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 // Import Pages
-import Home from "./pages/Home.jsx";
-import About from "./pages/About.jsx";
-import Gallery from "./pages/Gallery.jsx";
-import Menu from "./pages/Menu.jsx";
-import Contact from "./pages/Contact.jsx";
+import AdminScreen from "./pages/AdminScreen.jsx";
 
 // Import Components
 import Navbar from "./components/Navbar.jsx";
+import AnimatedRoute from "./components/AnimatedRoute.jsx";
 
 // Import Assets
 import background from "./assets/background/background.jpg";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
+  const location = useLocation();
+
+  if (location.pathname.startsWith("/admin")) {
+    // Only render the admin screen, no main layout
+    return(
+      <Routes>
+        <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminScreen />
+            </ProtectedRoute>
+          } 
+        />
+      </Routes>);
+  }
+
   return (
     <div className="font-display bg-[var(--color-background)]" id="app">
       <Navbar />
@@ -27,15 +41,7 @@ export default function App() {
         }}
       >
         <div style={{}} />
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/menu" element={<Menu />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/contact" element={<Contact />}></Route>
-          </Routes>
-        </Router>
+        <AnimatedRoute />
       </div>
     </div>
   );
