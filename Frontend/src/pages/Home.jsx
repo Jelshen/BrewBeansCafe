@@ -2,7 +2,7 @@ import React from "react";
 
 // Import components
 import HomeCard from "../components/HomeCard.jsx";
-import fetchMenu from "../api/FetchMenu.js";
+import fetchMenu from "../api/menu.js";
 
 // Import library
 import { useState, useEffect } from "react";
@@ -10,8 +10,6 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-
-const MENU_IMAGE_URL = `${import.meta.env.VITE_MENU_IMAGE_URL}/`;
 
 const Home = () => {
   const [randomItems, setRandomItems] = useState([]);
@@ -137,7 +135,7 @@ const Home = () => {
             {randomItems.map((item) => (
               <HomeCard
                 key={item.menu_id}
-                image={`${MENU_IMAGE_URL}${item.picture_url}`}
+                id={item.menu_id}
                 name={item.menu_name}
                 description={item.menu_description}
               />

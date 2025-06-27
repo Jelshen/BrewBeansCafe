@@ -1,6 +1,24 @@
 import React from "react";
+import { useState, useEffect } from "react";
 
-const HomeCard = ({ image, name, description }) => {
+import menu from "../api/menu.js";
+
+const HomeCard = ({ id, name, description }) => {
+  const [image_url, setImageUrl] = useState("");
+
+  useEffect(() => {
+    const fetchMenuImage = async () => {
+      try {
+        const imageUrl = await menu.getMenuImage(id);
+        setImageUrl(imageUrl);
+      } catch (error) {
+        console.error("Error fetching menu image:", error);
+      }
+    };
+
+    fetchMenuImage();
+  }, []);
+
   return (
     <div
       className="mx-auto max-w-xl w-full h-full border 
@@ -9,7 +27,7 @@ const HomeCard = ({ image, name, description }) => {
     >
       <img
         className="w-full h-48 object-cover rounded-t-lg"
-        src={image}
+        src={image_url}
         alt="Card image"
       />
 
