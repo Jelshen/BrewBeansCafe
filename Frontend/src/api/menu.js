@@ -27,9 +27,14 @@ const fetchMenu = {
     }
   },
 
-  postMenu: async ({ menuItem }) => {
+  upsertMenu: async ({ menuItem }) => {
     try {
-      const response = await axios.post(`${API_URL}/menu`, menuItem);
+      const response = await axios.post(
+        `${API_URL}/menu`,
+        menuItem,
+        { withCredentials: true }, // allow cookie
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
       return response.data;
     } catch (error) {
       throw new Error(

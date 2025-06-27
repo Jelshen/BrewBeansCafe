@@ -2,10 +2,11 @@ import React from "react";
 
 import { useState, useEffect, useMemo } from "react";
 
-import fetchMenu from "../api/FetchMenu.js";
+import menu from "../api/menu.js";
 import fetchCategory from "../api/fetchCategory.js";
 import MenuCard from "../components/MenuCard.jsx";
 import UpsertMenuModal from "../components/UpsertMenuModal.jsx";
+import Swal from "sweetalert2";
 
 const AdminScreen = ({ username }) => {
   const [menuItems, setMenuItems] = useState([]);
@@ -28,10 +29,35 @@ const AdminScreen = ({ username }) => {
   };
 
   const handleSave = async (data) => {
-    if (data.menu_id) {
-      // update logic
-    } else {
-      // insert logic
+    Swal.fire({
+      title: "Loading...",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    // Call the API
+    try {
+      const response = await menu.upsertMenu(data);
+
+      if (response) {
+        Swal.fire({
+          icon: "success",
+          title: "Saved!",
+          text: "Menu item saved successfully.",
+          timer: 2000,
+          showConfirmButton: true,
+        }).then(() => {
+          fetchData();
+        });
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: err.message,
+      });
     }
   };
 
@@ -40,7 +66,7 @@ const AdminScreen = ({ username }) => {
       try {
         setLoading(true);
         const [menuData, categoryData] = await Promise.all([
-          fetchMenu.getMenu(),
+          menu.getMenu(),
           fetchCategory.getCategories(),
         ]);
         setMenuItems(menuData);
@@ -89,7 +115,7 @@ const AdminScreen = ({ username }) => {
           {menuItems.map((item) => (
             <div key={item.menu_id} className="relative">
               <MenuCard
-                image={item.picture_url}
+                id={item.menu_id}
                 name={item.menu_name}
                 price={item.menu_price}
                 description={item.menu_description}
