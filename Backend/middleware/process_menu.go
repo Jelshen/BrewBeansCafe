@@ -113,8 +113,6 @@ func ParseMenuForm(c *fiber.Ctx) (models.Menu, error) {
 
 	// Handle image
 	file, err := c.FormFile("menu_image")
-	fmt.Println(file)
-	fmt.Println(err)
 	if err == nil {
 		// ✅ File uploaded, process it
 		fmt.Println("📎 Image file found:", file.Filename)
@@ -131,18 +129,23 @@ func ParseMenuForm(c *fiber.Ctx) (models.Menu, error) {
 			fmt.Println("❌ Image conversion failed:", err)
 			return menu, c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Image conversion failed"})
 		}
-	} else if file == nil && err == fiber.ErrMissingFile{
-		// ✅ No file was uploaded — skip updating image
-		fmt.Println("ℹ️ No new image uploaded; keeping existing image.")
-		// You can either:
-		// - Leave menu.MenuImage as-is (do not touch blob column), or
-		// - Set to nil if you want to remove it (depends on logic)
+	} 
+	// Handle edge case where no file is uploaded
+	else if err != nil {
+		if file == nil {
+			fmt.Println("ℹ️ No file uploaded")
+			// Acceptable edge case — skip
+		} else {
+			fmt.Println("❌ Unexpected error retrieving file:", err)
+			return menu, c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Image upload failed",
+			})
+		}
 	} else {
 		// ❌ Real error occurred (not just "no file")
 		fmt.Println("❌ Unexpected error while retrieving image file:", err)
 		return menu, c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid image upload"})
 	}
-
 
 	fmt.Println("✅ Form parsing completed")
 	return menu, nil
