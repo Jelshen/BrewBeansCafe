@@ -13,7 +13,8 @@ func SetupMenuRoutes(app *fiber.App, db *sql.DB) {
 
     // Public
     menuGroup.Get("/", handlers.GetMenus(db))
-
+    menuGroup.Get("/image/:id", handlers.GetMenuImage(db))
+    
     // Protected
     menuGroup.Post("/", middleware.Authenticate(), handlers.UpsertMenu(db))
     menuGroup.Delete("/:id", middleware.Authenticate(), handlers.DeleteMenu(db))

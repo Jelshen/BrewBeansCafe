@@ -9,9 +9,8 @@ CREATE TABLE menus (
     menu_name VARCHAR(100) NOT NULL,
     menu_price NUMERIC(6,2) NOT NULL,
 	menu_description TEXT NOT NULL,
-    picture_url TEXT,
+    menu_image BYTEA,
     category_id INTEGER REFERENCES categories(category_id) ON DELETE CASCADE,
-    is_available BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

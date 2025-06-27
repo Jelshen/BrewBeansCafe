@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Authenticate Protected Routes
+// Authenticate Protected Routes 
 func Authenticate() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		cookie := c.Cookies("token") // get cookie by name
