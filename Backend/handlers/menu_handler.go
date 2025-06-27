@@ -87,16 +87,29 @@ func UpsertMenu(db *sql.DB) fiber.Handler {
 			}
 			return c.Status(fiber.StatusCreated).JSON(menu)
 		} else {
-			// Update
-			_, err := db.Exec(`
-				UPDATE menus
-				SET menu_name = $1, menu_price = $2, menu_description = $3, menu_image = $4, category_id = $5
-				WHERE menu_id = $6
-			`, menu.MenuName, menu.MenuPrice, menu.MenuDescription, menu.MenuImage, menu.CategoryId, menu.MenuId)
-
-			if err != nil {
-				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
-			}
+			if menu.MenuImage == nil {
+                // 🧊 No new image uploaded — skip updating menu_image
+                _, err := db.Exec(`
+                    UPDATE menus
+                    SET menu_name = $1, menu_price = $2, menu_description = $3, category_id = $4
+                    WHERE menu_id = $5
+                `, menu.MenuName, menu.MenuPrice, menu.MenuDescription, menu.CategoryId, menu.MenuId)
+            
+                if err != nil {
+                    return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+                }
+            } else {
+                // 🖼️ Image uploaded — include menu_image update
+                _, err := db.Exec(`
+                    UPDATE menus
+                    SET menu_name = $1, menu_price = $2, menu_description = $3, menu_image = $4, category_id = $5
+                    WHERE menu_id = $6
+                `, menu.MenuName, menu.MenuPrice, menu.MenuDescription, menu.MenuImage, menu.CategoryId, menu.MenuId)
+            
+                if err != nil {
+                    return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+                }
+            }
 			// Return the updated object
 			return c.JSON(menu)
 		}
