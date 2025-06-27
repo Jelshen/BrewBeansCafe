@@ -129,9 +129,8 @@ func ParseMenuForm(c *fiber.Ctx) (models.Menu, error) {
 			fmt.Println("❌ Image conversion failed:", err)
 			return menu, c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Image conversion failed"})
 		}
-	} 
-	// Handle edge case where no file is uploaded
-	else if err != nil {
+	} else if err != nil {
+		// Handle edge case where no file is uploaded
 		if file == nil {
 			fmt.Println("ℹ️ No file uploaded")
 			// Acceptable edge case — skip
@@ -141,11 +140,7 @@ func ParseMenuForm(c *fiber.Ctx) (models.Menu, error) {
 				"error": "Image upload failed",
 			})
 		}
-	} else {
-		// ❌ Real error occurred (not just "no file")
-		fmt.Println("❌ Unexpected error while retrieving image file:", err)
-		return menu, c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid image upload"})
-	}
+	} 
 
 	fmt.Println("✅ Form parsing completed")
 	return menu, nil
