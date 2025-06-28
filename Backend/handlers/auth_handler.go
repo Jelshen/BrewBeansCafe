@@ -29,6 +29,8 @@ func CheckTokenValidity(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"message":  "Token is valid",
 		"admin_id": claims["admin_id"],
+		"username": claims["username"],
+		"expires_at": claims["exp"],
 	})
 }
 
