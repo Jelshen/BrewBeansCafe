@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 
 import menu from "../api/menu.js";
+import authenticate from "../api/authenticate.js";
 import fetchCategory from "../api/fetchCategory.js";
 import MenuCard from "../components/MenuCard.jsx";
 import UpsertMenuModal from "../components/UpsertMenuModal.jsx";
@@ -33,6 +34,28 @@ const AdminScreen = ({ username }) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await authenticate.logout(); // Call your API to logout
+      // Show success alert after logout
+      await Swal.fire({
+        icon: "success",
+        title: "Logged out!",
+        text: "You have been logged out successfully.",
+        showConfirmButton: true,
+      });
+      // Redirect to login page or home page
+      window.location.href = "/admin"; // Adjust the path as needed
+    } catch (err) {
+      // Show error alert
+      await Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: err.message || "Failed to log out.",
+      });
+    }
+  };
 
   const deleteMenu = async (id) => {
     const result = await Swal.fire({
@@ -140,11 +163,12 @@ const AdminScreen = ({ username }) => {
         </nav>
 
         <div className="p-4 flex items-center justify-center">
-          <Link to="/home">
-            <button className="items-center gap-2 w-[50%] px-3 py-2 bg-[var(--color-primary)] text-[var(--color-accent)] font-bold rounded hover:bg-[var(--color-background)] transition">
-              Logout
-            </button>
-          </Link>
+          <button
+            onClick={handleLogout}
+            className="items-center gap-2 w-[50%] px-3 py-2 bg-[var(--color-primary)] text-[var(--color-accent)] font-bold rounded hover:bg-[var(--color-background)] transition"
+          >
+            Logout
+          </button>
         </div>
       </aside>
 

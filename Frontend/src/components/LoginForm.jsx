@@ -29,7 +29,6 @@ const LoginForm = ({ onLoginSuccess }) => {
           icon: "success",
           title: "Login successful",
           text: "Welcome!",
-          timer: 2000,
           showConfirmButton: true,
         }).then(() => {
           onLoginSuccess(username);

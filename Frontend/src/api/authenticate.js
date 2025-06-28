@@ -18,5 +18,19 @@ const authenticate = {
       throw new Error(error.response?.data?.error || "Login failed");
     }
   },
+
+  logout: async () => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/auth/logout`,
+        {},
+        { withCredentials: true } // allow cookie
+      );
+
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || "Logout failed");
+    }
+  },
 };
 export default authenticate;
