@@ -9,6 +9,8 @@ import (
 
 func SetupAuthRoutes(app *fiber.App, db *sql.DB) {
     authGroup := app.Group("/api/auth")
+    
+    authGroup.Get("/check", handlers.CheckTokenValidity)
 
 	authGroup.Post("/", handlers.ValidateCredentials(db))
     authGroup.Post("/logout", handlers.Logout)

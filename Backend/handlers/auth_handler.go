@@ -11,6 +11,28 @@ import (
 
 var ErrInvalidCredentials = fiber.NewError(fiber.StatusUnauthorized, "Invalid credentials")
 
+func CheckTokenValidity(c *fiber.Ctx) error {
+	tokenStr := c.Cookies("token")
+	if tokenStr == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Missing token",
+		})
+	}
+
+	claims, err := middleware.ParseAndValidateToken(tokenStr)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid or expired token",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message":  "Token is valid",
+		"admin_id": claims["admin_id"],
+	})
+}
+
+
 func Logout(c *fiber.Ctx) error {
 	c.Cookie(&fiber.Cookie{
 		Name:     "token",
