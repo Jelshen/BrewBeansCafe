@@ -7,6 +7,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
+	"net/http"
 	"strconv"
 
 	"github.com/chai2010/webp"
@@ -22,37 +23,48 @@ func convertToWebP(reader io.Reader, mimeType string) ([]byte, error) {
 
 	fmt.Println("🔄 Starting image conversion to WebP...")
 
-	// Read the image into a buffer to measure its original size
+	// Read the image into a buffer
 	var originalBuf bytes.Buffer
 	tee := io.TeeReader(reader, &originalBuf)
-
-	switch mimeType {
-	case "image/jpeg":
-		fmt.Println("🖼️ Detected JPEG format")
-		img, err = jpeg.Decode(tee)
-	case "image/png":
-		fmt.Println("🖼️ Detected PNG format")
-		img, err = png.Decode(tee)
-	case "image/webp":
-		fmt.Println("🖼️ Detected WebP format")
-		img, err = webp.Decode(tee)
-	default:
-		errMsg := fmt.Sprintf("❌ Unsupported image type: %s", mimeType)
-		fmt.Println(errMsg)
-		return nil, fmt.Errorf(errMsg)
-	}
+	bufferedBytes, err := io.ReadAll(tee)
 	if err != nil {
-		fmt.Println("❌ Error decoding image: ", err)
+		fmt.Println("❌ Failed to read image bytes:", err)
 		return nil, err
 	}
 
-	originalSize := originalBuf.Len()
+	// Detect actual MIME type
+	detectedMime := http.DetectContentType(bufferedBytes[:512])
+	fmt.Println("📸 Detected MIME type:", detectedMime)
+
+	switch detectedMime {
+	case "image/jpeg":
+		fmt.Println("🖼️ Decoding as JPEG...")
+		img, err = jpeg.Decode(bytes.NewReader(bufferedBytes))
+	case "image/png":
+		fmt.Println("🖼️ Decoding as PNG...")
+		img, err = png.Decode(bytes.NewReader(bufferedBytes))
+	case "image/webp":
+		fmt.Println("🖼️ Decoding as WebP...")
+		img, err = webp.Decode(bytes.NewReader(bufferedBytes))
+	default:
+		errMsg := fmt.Sprintf("❌ Unsupported or unknown image type: %s", detectedMime)
+		fmt.Println(errMsg)
+		return nil, fmt.Errorf(errMsg)
+	}
+
+	if err != nil {
+		fmt.Println("❌ Error decoding image:", err)
+		return nil, err
+	}
+
+	originalSize := len(bufferedBytes)
 	fmt.Printf("📏 Original image size: %d B (%.2f KB / %.4f MB)\n", originalSize, float64(originalSize)/1024, float64(originalSize)/(1024*1024))
 
-	// Optionally resize (for compression)
+	// Resize
 	fmt.Println("📐 Resizing image to width 800px...")
 	img = imaging.Resize(img, 800, 0, imaging.Lanczos)
 
+	// Encode as WebP
 	var buf bytes.Buffer
 	err = webp.Encode(&buf, img, &webp.Options{Quality: 70})
 	if err != nil {
@@ -66,7 +78,6 @@ func convertToWebP(reader io.Reader, mimeType string) ([]byte, error) {
 
 	return buf.Bytes(), nil
 }
-
 
 func ParseMenuForm(c *fiber.Ctx) (models.Menu, error) {
 	var menu models.Menu
@@ -86,8 +97,7 @@ func ParseMenuForm(c *fiber.Ctx) (models.Menu, error) {
 		fmt.Println("✅ menu_id:", menu.MenuId)
 	}
 
-	priceStr := c.FormValue("menu_price")
-	if priceStr != "" {
+	if priceStr := c.FormValue("menu_price"); priceStr != "" {
 		price, err := strconv.ParseFloat(priceStr, 64)
 		if err != nil {
 			fmt.Println("❌ Invalid menu_price:", priceStr)
@@ -100,8 +110,7 @@ func ParseMenuForm(c *fiber.Ctx) (models.Menu, error) {
 	menu.MenuDescription = c.FormValue("menu_description")
 	fmt.Println("✅ menu_description:", menu.MenuDescription)
 
-	catStr := c.FormValue("category_id")
-	if catStr != "" {
+	if catStr := c.FormValue("category_id"); catStr != "" {
 		catId, err := strconv.Atoi(catStr)
 		if err != nil {
 			fmt.Println("❌ Invalid category_id:", catStr)
@@ -114,9 +123,7 @@ func ParseMenuForm(c *fiber.Ctx) (models.Menu, error) {
 	// Handle image
 	file, err := c.FormFile("menu_image")
 	if err == nil {
-		// ✅ File uploaded, process it
 		fmt.Println("📎 Image file found:", file.Filename)
-
 		src, err := file.Open()
 		if err != nil {
 			fmt.Println("❌ Failed to open image file:", err)
@@ -129,18 +136,12 @@ func ParseMenuForm(c *fiber.Ctx) (models.Menu, error) {
 			fmt.Println("❌ Image conversion failed:", err)
 			return menu, c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Image conversion failed"})
 		}
-	} else if err != nil {
-		// Handle edge case where no file is uploaded
-		if file == nil {
-			fmt.Println("ℹ️ No file uploaded")
-			// Acceptable edge case — skip
-		} else {
-			fmt.Println("❌ Unexpected error retrieving file:", err)
-			return menu, c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "Image upload failed",
-			})
-		}
-	} 
+	} else if file == nil {
+		fmt.Println("ℹ️ No file uploaded")
+	} else {
+		fmt.Println("❌ Unexpected error retrieving file:", err)
+		return menu, c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Image upload failed"})
+	}
 
 	fmt.Println("✅ Form parsing completed")
 	return menu, nil
