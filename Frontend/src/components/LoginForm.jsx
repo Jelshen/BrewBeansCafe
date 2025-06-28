@@ -13,7 +13,6 @@ const LoginForm = ({ onLoginSuccess }) => {
     e.preventDefault();
 
     Swal.fire({
-      title: "Loading...",
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();

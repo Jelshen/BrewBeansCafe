@@ -36,19 +36,40 @@ const AdminScreen = ({ username }) => {
   }, []);
 
   const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will log you out.",
+      icon: "question",
+      reverseButtons: true,
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Logout",
+    });
+
+    if (!result.isConfirmed) return;
+
+    // Show loading prompt
+    Swal.fire({
+      title: "Logging out...",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     try {
       await authenticate.logout(); // Call your API to logout
-      // Show success alert after logout
+
       await Swal.fire({
         icon: "success",
         title: "Logged out!",
         text: "You have been logged out successfully.",
         showConfirmButton: true,
       });
-      // Redirect to login page or home page
-      window.location.href = "/admin"; // Adjust the path as needed
+
+      window.location.href = "/admin"; // Redirect to login page
     } catch (err) {
-      // Show error alert
       await Swal.fire({
         icon: "error",
         title: "Error!",
@@ -124,8 +145,8 @@ const AdminScreen = ({ username }) => {
 
     if (result.isConfirmed) {
       try {
-        const response = await menu.deleteMenu(id); // Call your API
-        if (!response) return;
+        const success = await menu.deleteMenu(id);
+        if (!success) return;
 
         // Show success alert after successful deletion
         await Swal.fire({

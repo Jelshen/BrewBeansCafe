@@ -68,6 +68,8 @@ const fetchMenu = {
       const response = await axiosInstance.delete(`${API_URL}/menu/${id}`, {
         withCredentials: true,
       });
+      if (response.status === 204) return true;
+
       return response.data;
     } catch (error) {
       if (error?.handled) return null; // Handle session expiration
