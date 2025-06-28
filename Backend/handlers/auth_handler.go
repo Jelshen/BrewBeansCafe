@@ -73,7 +73,7 @@ func ValidateCredentials(db *sql.DB) fiber.Handler {
 			})
 		}
 
-		token, err := middleware.GenerateToken(admin.AdminId)
+		token, err := middleware.GenerateToken(admin.AdminId, admin.Username)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error":       "Could not generate token",
