@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 
 // Import API and components
-import fetchMenu from "../api/FetchMenu.js";
+import menu from "../api/menu.js";
 import fetchCategory from "../api/fetchCategory.js";
 import MenuCard from "../components/MenuCard.jsx";
 
@@ -19,7 +19,7 @@ const Menu = () => {
       try {
         setLoading(true);
         const [menuData, categoryData] = await Promise.all([
-          fetchMenu.getMenu(),
+          menu.getMenu(),
           fetchCategory.getCategories(),
         ]);
         setMenuItems(menuData);
@@ -117,7 +117,7 @@ const Menu = () => {
         {filteredItems.map((item) => (
           <MenuCard
             key={item.menu_id}
-            image={item.picture_url}
+            id={item.menu_id}
             name={item.menu_name}
             price={item.menu_price}
             description={item.menu_description}

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = `${import.meta.env.VITE_API_DOMAIN_URL}/api`;
+const API_URL = `${import.meta.env.VITE_BACKEND_DOMAIN_URL}/api`;
 
 const fetchMenu = {
   getMenu: async () => {
@@ -10,6 +10,20 @@ const fetchMenu = {
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || "Failed to fetch menu");
+    }
+  },
+
+  getMenuImage: async (id) => {
+    try {
+      const response = await axios.get(`${API_URL}/menu/image/${id}`, {
+        // Backend sends image, sets the content type and axios will handle it
+        responseType: "blob",
+      });
+      return URL.createObjectURL(response.data);
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch menu image"
+      );
     }
   },
 

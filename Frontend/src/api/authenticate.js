@@ -1,7 +1,7 @@
 // auth.js
 import axios from "axios";
 
-const API_URL = `${import.meta.env.VITE_API_DOMAIN_URL}/api`;
+const API_URL = `${import.meta.env.VITE_BACKEND_DOMAIN_URL}/api`;
 
 const authenticate = {
   login: async (username, password) => {
