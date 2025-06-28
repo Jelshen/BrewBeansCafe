@@ -13,12 +13,15 @@ import (
 var ErrInvalidCredentials = fiber.NewError(fiber.StatusUnauthorized, "Invalid credentials")
 
 func Logout(c *fiber.Ctx) error {
-    // Clear the cookie manually
-	fmt.Println("token: " + c.Cookies("token"))
-    
-	c.ClearCookie("token")
-
-	fmt.Println("token after ClearCookie: " + c.Cookies("token"))
+	c.Cookie(&fiber.Cookie{
+		Name:     "token",
+		Value:    "",
+		HTTPOnly: true,
+		Secure:   false, // true in production
+		SameSite: "Strict",
+		MaxAge: 0, // 30 minutes
+		Path:     "/",
+	})
     
     return c.JSON(fiber.Map{
         "message": "Logged out successfully",
@@ -63,6 +66,7 @@ func ValidateCredentials(db *sql.DB) fiber.Handler {
 			HTTPOnly: true,
 			Secure:   false, // true in production
 			SameSite: "Strict",
+			MaxAge: 10800, // 30 minutes
 			Path:     "/",
 		})
 
