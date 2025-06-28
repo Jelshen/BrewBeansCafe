@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"database/sql"
 	"github.com/Jelshen/BrewBeanCafe/models"
 	"github.com/gofiber/fiber/v2"
@@ -10,6 +11,19 @@ import (
 )
 
 var ErrInvalidCredentials = fiber.NewError(fiber.StatusUnauthorized, "Invalid credentials")
+
+func Logout(c *fiber.Ctx) error {
+    // Clear the cookie manually
+	fmt.Println("token: " + c.Cookies("token"))
+    
+	c.ClearCookie("token")
+
+	fmt.Println("token after ClearCookie: " + c.Cookies("token"))
+    
+    return c.JSON(fiber.Map{
+        "message": "Logged out successfully",
+    })
+}
 
 // ValidateCredentials handles the login process
 func ValidateCredentials(db *sql.DB) fiber.Handler {
