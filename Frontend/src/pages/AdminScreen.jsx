@@ -57,40 +57,6 @@ const AdminScreen = ({ username }) => {
     }
   };
 
-  const deleteMenu = async (id) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "This action cannot be undone.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const response = await menu.deleteMenu(id); // Call your API
-        // Show success alert after successful deletion
-        await Swal.fire({
-          icon: "success",
-          title: "Deleted!",
-          text: "Menu item has been deleted.",
-          showConfirmButton: true,
-        });
-
-        fetchData(); // Refresh the list afterward
-      } catch (err) {
-        // Show error alert
-        await Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: err.message || "Failed to delete menu item.",
-        });
-      }
-    }
-  };
-
   // Move fetchData here so it's reusable
   const fetchData = async () => {
     try {
@@ -123,6 +89,7 @@ const AdminScreen = ({ username }) => {
 
     try {
       const response = await menu.upsertMenu(data);
+      if (!response) return;
 
       if (response) {
         Swal.fire({
@@ -141,6 +108,42 @@ const AdminScreen = ({ username }) => {
         title: "Error!",
         text: err.message,
       });
+    }
+  };
+
+  const deleteMenu = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await menu.deleteMenu(id); // Call your API
+        if (!response) return;
+
+        // Show success alert after successful deletion
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "Menu item has been deleted.",
+          showConfirmButton: true,
+        });
+
+        fetchData(); // Refresh the list afterward
+      } catch (err) {
+        // Show error alert
+        await Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: err.message || "Failed to delete menu item.",
+        });
+      }
     }
   };
 

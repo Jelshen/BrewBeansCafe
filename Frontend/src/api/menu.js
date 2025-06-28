@@ -1,4 +1,5 @@
 import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 
 const API_URL = `${import.meta.env.VITE_BACKEND_DOMAIN_URL}/api`;
 
@@ -47,7 +48,7 @@ const fetchMenu = {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/menu`, formData, {
+      const response = await axiosInstance.post(`${API_URL}/menu`, formData, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -55,6 +56,7 @@ const fetchMenu = {
       });
       return response.data;
     } catch (error) {
+      if (error?.handled) return null; // Handle session expiration
       throw new Error(
         error.response?.data?.error || "Failed to add/update menu item"
       );
@@ -63,11 +65,12 @@ const fetchMenu = {
 
   deleteMenu: async (id) => {
     try {
-      const response = await axios.delete(`${API_URL}/menu/${id}`, {
+      const response = await axiosInstance.delete(`${API_URL}/menu/${id}`, {
         withCredentials: true,
       });
       return response.data;
     } catch (error) {
+      if (error?.handled) return null; // Handle session expiration
       throw new Error(
         error.response?.data?.message || "Failed to delete menu item"
       );
