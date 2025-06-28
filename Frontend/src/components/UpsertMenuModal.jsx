@@ -12,7 +12,7 @@ const UpsertMenuModal = ({
     price: "",
     description: "",
     categoryId: "",
-    imageFile: null,
+    menuImage: null,
   });
 
   const [fileError, setFileError] = useState("");
@@ -32,7 +32,7 @@ const UpsertMenuModal = ({
         price: "",
         description: "",
         categoryId: "",
-        imageFile: null,
+        menuImage: null,
       });
     }
     setFileError("");
@@ -50,10 +50,10 @@ const UpsertMenuModal = ({
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
         setFileError("Image size must be less than 2MB.");
-        setForm((prev) => ({ ...prev, imageFile: null }));
+        setForm((prev) => ({ ...prev, menuImage: null }));
       } else {
         setFileError("");
-        setForm((prev) => ({ ...prev, imageFile: file }));
+        setForm((prev) => ({ ...prev, menuImage: file }));
       }
     }
   };
@@ -67,7 +67,7 @@ const UpsertMenuModal = ({
       menu_price: parseFloat(form.price),
       menu_description: form.description,
       category_id: form.categoryId,
-      image_file: form.imageFile, // you can access this on the backend
+      menu_image: form.menuImage, // you can access this on the backend
     };
 
     onSubmit(data);
@@ -115,6 +115,7 @@ const UpsertMenuModal = ({
         <div className="mb-4">
           <label className="block mb-1 font-medium text-sm">Upload Image</label>
           <input
+            name="menuImage"
             type="file"
             accept="image/*"
             onChange={handleFileChange}
@@ -125,9 +126,9 @@ const UpsertMenuModal = ({
               file:text-sm file:font-medium file:bg-[var(--color-primary)]
             file:text-[var(--color-background)] hover:file:bg-[var(--color-accent)]"
           />
-          {form.imageFile && (
+          {form.menuImage && (
             <p className="text-sm text-[var(--color-text)] mt-1">
-              Selected: {form.imageFile.name}
+              Selected: {form.menuImage.name}
             </p>
           )}
           {fileError && (

@@ -32,8 +32,6 @@ const Home = () => {
       } catch (err) {
         setError(err.message);
         console.error("Error fetching data:", err);
-        // Fallback to dummy data if API fails
-        setRandomItems(dummyData);
       } finally {
         setLoading(false);
       }

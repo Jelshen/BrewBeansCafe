@@ -5,7 +5,7 @@ import { memo, useState, useEffect } from "react";
 import menu from "../api/menu.js";
 
 const MenuCard = memo(
-  ({ id, name, price, description, category, noScale = false }) => {
+  ({ id, name, price, description, category, noScale = false, refreshKey }) => {
     const [image_url, setImageUrl] = useState("");
 
     useEffect(() => {
@@ -19,7 +19,7 @@ const MenuCard = memo(
       };
 
       fetchMenuImage();
-    }, []);
+    }, [refreshKey]);
 
     return (
       <div>
