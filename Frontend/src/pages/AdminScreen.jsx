@@ -1,6 +1,7 @@
 import React from "react";
 
 import { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 
 import menu from "../api/menu.js";
 import fetchCategory from "../api/fetchCategory.js";
@@ -137,10 +138,13 @@ const AdminScreen = ({ username }) => {
             Menu
           </button>
         </nav>
+
         <div className="p-4 flex items-center justify-center">
-          <button className="items-center gap-2 w-[50%] px-3 py-2 bg-[var(--color-primary)] text-[var(--color-accent)] font-bold rounded hover:bg-[var(--color-background)] transition">
-            Logout
-          </button>
+          <Link to="/home">
+            <button className="items-center gap-2 w-[50%] px-3 py-2 bg-[var(--color-primary)] text-[var(--color-accent)] font-bold rounded hover:bg-[var(--color-background)] transition">
+              Logout
+            </button>
+          </Link>
         </div>
       </aside>
 
@@ -152,7 +156,8 @@ const AdminScreen = ({ username }) => {
           </h1>
           <button
             onClick={Create}
-            className="bg-[var(--color-accent)] text-white px-4 py-2 rounded hover:bg-[var(--color-primary)] transition"
+            className="bg-[var(--color-accent)] text-white px-4 py-2 rounded
+             hover:bg-[var(--color-primary)] transition mb-4"
             aria-label="Add new menu item"
           >
             Add Menu
