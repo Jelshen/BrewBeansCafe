@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"database/sql"
 	"github.com/Jelshen/BrewBeanCafe/models"
 	"github.com/gofiber/fiber/v2"
