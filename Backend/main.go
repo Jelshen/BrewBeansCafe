@@ -18,7 +18,9 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 10 * 1024 * 1024, // Set body limit to 10MB
+	})
 
 	// Or extend your config for customization
 	app.Use(cors.New(cors.Config{
