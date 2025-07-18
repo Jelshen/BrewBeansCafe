@@ -2,7 +2,7 @@ import React from "react";
 
 // Import components
 import HomeCard from "../components/HomeCard.jsx";
-import fetchMenu from "../api/menu.js";
+import Menu from "../api/menu.js";
 
 // Import library
 import { useState, useEffect } from "react";
@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import Swal from "sweetalert2";
 
 const Home = () => {
   const [randomItems, setRandomItems] = useState([]);
@@ -24,16 +25,12 @@ const Home = () => {
   useEffect(() => {
     const fetchAndRandomize = async () => {
       try {
-        setLoading(true);
-        const menuData = await fetchMenu.getMenu();
+        const menuData = await Menu.getMenu();
         // Get 5 random items from the menu
         const randomSelection = getRandomItems(menuData, 5);
         setRandomItems(randomSelection);
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching data:", err);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -61,9 +58,9 @@ const Home = () => {
   };
 
   const pageVariants = {
-    initial: { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -30 },
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
   };
 
   return (
@@ -108,10 +105,12 @@ const Home = () => {
 
       {/* Card Section */}
       <div className="relative md:mb-0 md:flex-1 md:flex justify-center w-full lg:w-1/1 xl:w-4/7 p-4 md:p-8 lg:p-10 xl:p-20">
-        {loading ? (
-          <div className="text-center">Loading...</div>
-        ) : error ? (
-          <div className="text-center text-red-500">{error}</div>
+        {error ? (
+          <div className="flex justify-center items-center">
+            <p className="mt-8 lg:text-xl text-xs font-medium text-[var(--color-accent)]">
+              No menu items available.
+            </p>
+          </div>
         ) : (
           <Carousel
             swipeable={true}
@@ -124,7 +123,7 @@ const Home = () => {
             className="home-carousel"
             customTransition="all .5s"
             transitionDuration={500}
-            containerClass="relative w-full h-full mb-8 md:mb-0"
+            containerClass="relative w-full mb-8 md:mb-0"
             removeArrowOnDeviceType={["mobile", "tablet"]}
             dotListClass="custom-dot-list-style-home"
             renderDotsOutside={true}

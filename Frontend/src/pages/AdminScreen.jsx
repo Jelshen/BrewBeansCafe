@@ -1,90 +1,113 @@
 import React from "react";
-
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
+import background from "../assets/background/background.jpg";
 
-import menu from "../api/menu.js";
+// API
+import menuApi from "../api/menu.js";
 import authenticate from "../api/authenticate.js";
-import fetchCategory from "../api/fetchCategory.js";
-import MenuCard from "../components/MenuCard.jsx";
-import UpsertMenuModal from "../components/UpsertMenuModal.jsx";
+import categoryApi from "../api/category.js";
+
+// Components
+import UpsertMenuModal from "../components/Admin/UpsertMenuModal.jsx";
+import AdminMenuSection from "../components/Admin/AdminMenuSection.jsx";
+import AdminCategorySection from "../components/Admin/AdminCategorySection.jsx";
+import AdminSidebar from "../components/Admin/AdminSidebar.jsx";
 import Swal from "sweetalert2";
 
 const AdminScreen = ({ username }) => {
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [imageRefreshVersion, setImageRefreshVersion] = useState(0);
 
   // Modal Purposes
-  const [showModal, setShowModal] = useState(false);
+  const [showMenuModal, setShowMenuModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const Edit = (item) => {
-    setSelectedItem(item);
-    setShowModal(true);
-  };
-
-  const Create = () => {
-    setSelectedItem(null); // create mode
-    setShowModal(true);
-  };
+  // State management
+  const [isMenu, setIsMenu] = useState(true);
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const handleLogout = async () => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "This will log you out.",
-      icon: "question",
-      reverseButtons: true,
+  // Confirm dialog (e.g. for logout or delete)
+  const showConfirm = async ({ title, text, confirmButtonText }) => {
+    return await Swal.fire({
+      title,
+      text,
+      icon: "warning",
       showCancelButton: true,
+      reverseButtons: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Logout",
+      confirmButtonText,
+      customClass: {
+        popup: "text-white",
+      },
     });
+  };
 
-    if (!result.isConfirmed) return;
-
-    // Show loading prompt
+  // Loading dialog
+  const showLoading = (title = "Loading...") => {
     Swal.fire({
-      title: "Logging out...",
+      title,
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
       },
     });
+  };
+
+  // Success alert
+  const showSuccess = async (title, text, timer = 2000) => {
+    await Swal.fire({
+      icon: "success",
+      title,
+      text,
+      timer,
+      showConfirmButton: true,
+    });
+  };
+
+  // Error alert
+  const showError = async (error) => {
+    await Swal.fire({
+      icon: "error",
+      title: "Error!",
+      text: error?.message || "Something went wrong.",
+    });
+  };
+
+  const handleLogout = async () => {
+    const result = await showConfirm({
+      title: "Are you sure?",
+      text: "This will log you out.",
+      confirmButtonText: "Logout",
+    });
+
+    if (!result.isConfirmed) return;
+
+    showLoading("Logging out...");
 
     try {
-      await authenticate.logout(); // Call your API to logout
-
-      await Swal.fire({
-        icon: "success",
-        title: "Logged out!",
-        text: "You have been logged out successfully.",
-        showConfirmButton: true,
-      });
-
-      window.location.href = "/admin"; // Redirect to login page
+      await authenticate.logout();
+      await showSuccess(
+        "Logged out!",
+        "You have been logged out successfully."
+      );
+      window.location.href = "/admin";
     } catch (err) {
-      await Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: err.message || "Failed to log out.",
-      });
+      await showError(err);
     }
   };
 
   // Move fetchData here so it's reusable
   const fetchData = async () => {
     try {
-      setLoading(true);
       const [menuData, categoryData] = await Promise.all([
-        menu.getMenu(),
-        fetchCategory.getCategories(),
+        menuApi.getMenu(),
+        categoryApi.getCategories(),
       ]);
       setMenuItems(Array.isArray(menuData) ? menuData : []);
       setCategories(Array.isArray(categoryData) ? categoryData : []);
@@ -94,77 +117,88 @@ const AdminScreen = ({ username }) => {
     } catch (err) {
       setError(err.message);
       console.log("Error fetching data:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
+  // Menu Section
   const handleSave = async (data) => {
-    Swal.fire({
-      title: "Loading...",
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    showLoading("Saving...");
 
     try {
-      const response = await menu.upsertMenu(data);
+      const response = await menuApi.upsertMenu(data);
       if (!response) return;
 
-      if (response) {
-        Swal.fire({
-          icon: "success",
-          title: "Saved!",
-          text: "Menu item saved successfully.",
-          timer: 2000,
-          showConfirmButton: true,
-        }).then(() => {
-          fetchData(); // ✅ You can now call this here
-        });
-      }
+      await showSuccess("Saved!", "Menu item saved successfully.");
+      fetchData();
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: err.message,
-      });
+      await showError(err);
     }
+  };
+
+  const EditMenu = (item) => {
+    setSelectedItem(item);
+    setShowMenuModal(true);
+  };
+
+  const CreateMenu = () => {
+    setSelectedItem(null); // create mode
+    setShowMenuModal(true);
   };
 
   const deleteMenu = async (id) => {
-    const result = await Swal.fire({
+    const result = await showConfirm({
       title: "Are you sure?",
       text: "This action cannot be undone.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     });
 
-    if (result.isConfirmed) {
-      try {
-        const success = await menu.deleteMenu(id);
-        if (!success) return;
+    if (!result.isConfirmed) return;
 
-        // Show success alert after successful deletion
-        await Swal.fire({
-          icon: "success",
-          title: "Deleted!",
-          text: "Menu item has been deleted.",
-          showConfirmButton: true,
-        });
+    try {
+      const success = await menuApi.deleteMenu(id);
+      if (!success) return;
 
-        fetchData(); // Refresh the list afterward
-      } catch (err) {
-        // Show error alert
-        await Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: err.message || "Failed to delete menu item.",
-        });
+      await showSuccess("Deleted!", "Menu item has been deleted.");
+      fetchData();
+    } catch (err) {
+      await showError(err);
+    }
+  };
+
+  // Category Section
+  const addCategory = async (category) => {
+    showLoading("Saving...");
+
+    try {
+      const response = await categoryApi.addCategory(category);
+      if (response) {
+        await showSuccess("Saved!", "Category saved successfully.");
+        fetchData();
       }
+    } catch (err) {
+      await showError(err);
+    }
+  };
+
+  const deleteCategory = async (id) => {
+    const result = await showConfirm({
+      title: "Are you sure?",
+      text: "This will delete the category.",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (!result.isConfirmed) return;
+
+    showLoading("Deleting...");
+
+    try {
+      const response = await categoryApi.deleteCategory(id);
+      if (response) {
+        await showSuccess("Deleted!", "Category deleted.");
+        fetchData();
+      }
+    } catch (err) {
+      await showError(err);
     }
   };
 
@@ -176,126 +210,85 @@ const AdminScreen = ({ username }) => {
   }, [categories]);
 
   return (
-    <div className="flex flex-row h-screen bg-[var(--color-background)]">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[var(--color-accent)] text-white flex flex-col">
-        <div className="p-6 text-2xl font-bold">BrewBeans Cafe</div>
-        <nav className="flex-1 px-4 space-y-2">
-          <button className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white hover:text-[var(--color-accent)] transition">
-            Menu
-          </button>
-        </nav>
-
-        <div className="p-4 flex items-center justify-center">
-          <button
-            onClick={handleLogout}
-            className="items-center gap-2 w-[50%] px-3 py-2 bg-[var(--color-primary)] text-[var(--color-accent)] font-bold rounded hover:bg-[var(--color-background)] transition"
-          >
-            Logout
-          </button>
-        </div>
-      </aside>
-
+    <div
+      className="relative bg-cover bg-center bg-no-repeat
+      font-display flex flex-row h-screen backdrop-blur-xl"
+      style={{
+        backgroundImage: `url(${background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="absolute inset-0 backdrop-blur-md bg-black/20 -z-10"></div>
+      <AdminSidebar
+        isMenu={isMenu}
+        setIsMenu={setIsMenu}
+        handleLogout={handleLogout}
+      />
       {/* Main Content */}
-      <main className="flex-1 p-6 overflow-y-auto">
+      <main className="flex-1 p-10 overflow-y-auto">
         <div className="flex flex-row justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-4">
+          <h1 className="text-2xl font-semibold text-[var(--color-accent)] mb-4">
             Welcome, {username}!
           </h1>
-          <button
-            onClick={Create}
-            className="bg-[var(--color-accent)] text-white px-4 py-2 rounded
-             hover:bg-[var(--color-primary)] transition mb-4"
-            aria-label="Add new menu item"
-          >
-            Add Menu
-          </button>
+          {isMenu && (
+            <button
+              onClick={CreateMenu}
+              className="z-30 absolute bottom-8 right-8 w-12 h-12 rounded-full bg-[var(--color-accent)] text-white 
+                       flex items-center justify-center shadow-md hover:bg-[var(--color-primary)] hover:scale-110
+                       transition duration-200 hover:cursor-pointer"
+              aria-label="Add new menu item"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
+          )}
         </div>
 
-        {menuItems.length === 0 ? (
-          <div className="flex justify-center items-center w-full h-full">
-            <p className="text-[var(--color-accent)] text-3xl font-medium">
-              There aren't any menus.
-            </p>
-          </div>
+        {isMenu ? (
+          // Render if menu button is clicked, which will set isMenu to true.
+          menuItems.length === 0 ? (
+            <div className="flex justify-center items-center w-full h-full">
+              <p className="text-[var(--color-accent)] text-lg lg:text-3xl font-medium">
+                There aren't any menus.
+              </p>
+            </div>
+          ) : (
+            <AdminMenuSection
+              menuItems={menuItems}
+              categoryLookup={categoryLookup}
+              Edit={EditMenu}
+              deleteMenu={deleteMenu}
+              imageRefreshVersion={imageRefreshVersion}
+            />
+          )
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {menuItems.map((item) => (
-              <div key={item.menu_id} className="relative">
-                <MenuCard
-                  id={item.menu_id}
-                  name={item.menu_name}
-                  price={item.menu_price}
-                  description={item.menu_description}
-                  category={categoryLookup[item.category_id] || "Uncategorized"}
-                  noScale={true}
-                  refreshKey={imageRefreshVersion} // Use the refresh version to force image reload
-                />
-                <div className="flex flex-row absolute bottom-4 right-4 gap-3">
-                  <button
-                    onClick={() => Edit(item)}
-                    className="bg-[var(--color-accent)]
-                 text-white p-1 w-15 rounded-full shadow
-                 hover:bg-[var(--color-primary)]"
-                    aria-label="Edit menu"
-                  >
-                    <div className="flex flex-row justify-center items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-4 h-4 center"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15.232 5.232l3.536 3.536M9 11l6-6 3 3-6 6H9v-3zM4 20h16"
-                        />
-                      </svg>
-                      <span className="text-xs px-1">Edit</span>
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => deleteMenu(item.menu_id)}
-                    className="bottom-4 bg-[var(--color-accent)]
-                 text-white p-1 w-20 rounded-full shadow
-                 hover:bg-[red]"
-                    aria-label="Delete menu"
-                  >
-                    <div className="flex flex-row justify-center items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-4 h-4 center"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19 7L5 7M10 11V17M14 11V17M6 7L6 19A2 2 0 008 21H16A2 2 0 0018 19V7M9 7V5A1 1 0 0110 4H14A1 1 0 0115 5V7"
-                        />
-                      </svg>
-                      <span className="text-xs px-1">Delete</span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <AdminCategorySection
+            categories={categories}
+            onAddCategory={addCategory}
+            onDeleteCategory={deleteCategory}
+          />
         )}
       </main>
 
-      {showModal && (
+      {showMenuModal && (
         <UpsertMenuModal
-          isOpen={showModal}
+          isOpen={showMenuModal}
           item={selectedItem}
           categories={categories}
-          onClose={() => setShowModal(false)}
+          onClose={() => setShowMenuModal(false)}
           onSubmit={handleSave}
         />
       )}

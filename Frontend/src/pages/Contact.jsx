@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import ContactCard from "../components/ContactCard";
+import { motion, animate } from "framer-motion";
+import { useEffect } from "react";
 
 import * as Icons from "../components/SVGIcons";
 
@@ -37,8 +39,21 @@ const ContactUs = () => {
     },
   ];
 
+  const pageVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  };
+
   return (
-    <div className="text-[var(--color-accent)] backdrop-blur-lg p-4">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="text-[var(--color-accent)] backdrop-blur-lg p-4"
+    >
       {/* Header Section */}
       <div
         className="text-left lg:text-center mb-4 xl:mb-8
@@ -68,7 +83,7 @@ const ContactUs = () => {
                 className="w-full h-[260px] md:h-[360px] lg:h-[536px]"
                 style={{ border: 0 }}
                 allowFullScreen=""
-                loading="lazy"
+                loading="eager"
                 referrerPolicy="no-referrer-when-downgrade"
               ></iframe>
             </div>
@@ -117,7 +132,7 @@ const ContactUs = () => {
           </p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

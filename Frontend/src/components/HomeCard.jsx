@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 import menu from "../api/menu.js";
 
@@ -38,17 +39,16 @@ const HomeCard = ({ id, name, description }) => {
 
         <p
           className="text-[var(--color-text)] 
-            text-xs lg:text-xs flex-grow"
+            text-xs lg:text-xs flex-grow text-wrap break-words"
         >
           {description}
         </p>
 
-        <a
-          href="/menu"
-          className="text-xs active:text-[var(--color-primary)] mt-4 text-[var(--color-accent)] hover:text-[var(--color-primary)]"
-        >
-          Learn More
-        </a>
+        <Link to="/menu">
+          <p className="text-xs active:text-[var(--color-primary)] mt-4 text-[var(--color-accent)] hover:text-[var(--color-primary)]">
+            Learn More
+          </p>
+        </Link>
       </div>
     </div>
   );

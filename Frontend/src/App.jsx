@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
 // Import Pages
@@ -18,29 +18,31 @@ export default function App() {
 
   if (location.pathname.startsWith("/admin")) {
     // Only render the admin screen, no main layout
-    return(
+    return (
       <Routes>
-        <Route path="/admin" element={
+        <Route
+          path="/admin"
+          element={
             <ProtectedRoute>
               <AdminScreen />
             </ProtectedRoute>
-          } 
+          }
         />
-      </Routes>);
+      </Routes>
+    );
   }
 
   return (
     <div className="font-display bg-[var(--color-background)]" id="app">
-      <Navbar />
       <div
-        className="min-h-screen bg-cover bg-center"
+        id="scroll-container"
+        className="bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url(${background})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div style={{}} />
         <AnimatedRoute />
       </div>
     </div>

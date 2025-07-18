@@ -3,7 +3,7 @@ import axiosInstance from "../api/axiosInstance";
 
 const API_URL = `${import.meta.env.VITE_BACKEND_DOMAIN_URL}/api`;
 
-const fetchMenu = {
+const Menu = {
   getMenu: async () => {
     try {
       const response = await axios.get(`${API_URL}/menu`);
@@ -28,8 +28,6 @@ const fetchMenu = {
   },
 
   upsertMenu: async (menuItem) => {
-    console.log("Menu item: ", menuItem);
-
     const formData = new FormData();
     formData.append("menu_name", menuItem.menu_name);
     formData.append("menu_price", menuItem.menu_price);
@@ -80,4 +78,4 @@ const fetchMenu = {
   },
 };
 
-export default fetchMenu;
+export default Menu;

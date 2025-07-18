@@ -25,12 +25,12 @@ const MenuCard = memo(
       <div>
         <div
           className={`relative bg-[var(--color-background)] rounded-xl shadow-lg 
-              overflow-hidden w-full h-68 lg:h-88
+              overflow-hidden w-full h-65 lg:h-88
               transition-transform duration-300
               ${noScale ? "" : "hover:scale-103"}`}
         >
           <img
-            src={image_url}
+            src={image_url || "/Frontend/src/assets/menu/webp/americano.webp"}
             alt={name}
             className="w-full h-28 lg:h-48 object-cover"
             loading="lazy" // Lazy load images
@@ -45,7 +45,7 @@ const MenuCard = memo(
                 ${price.toFixed(2)}
               </span>
             </div>
-            <p className="text-[12px] md:text-[16px] text-[var(--color-text)]">
+            <p className="text-[12px] md:text-[16px] text-[var(--color-text)] break-words">
               {description}
             </p>
           </div>

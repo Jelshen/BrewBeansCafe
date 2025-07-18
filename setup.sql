@@ -4,6 +4,12 @@ CREATE TABLE categories (
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+INSERT INTO categories (name) VALUES
+('Coffee'),
+('Tea'),
+('Pastry'),
+('Sandwiches')
+
 CREATE TABLE menus (
     menu_id SERIAL PRIMARY KEY,
     menu_name VARCHAR(100) NOT NULL,
