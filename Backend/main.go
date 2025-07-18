@@ -18,7 +18,9 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 10 * 1024 * 1024, // Set body limit to 10MB
+	})
 
 	// Or extend your config for customization
 	app.Use(cors.New(cors.Config{
@@ -26,6 +28,7 @@ func main() {
 		AllowOrigins: os.Getenv("ALLOWED_ORIGINS"),
 		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 		AllowHeaders: "Origin, Content-Type, Accept",
+		AllowCredentials: true,
 	}))
 
 	db := config.InitDB()
@@ -33,6 +36,7 @@ func main() {
 
 	routes.SetupMenuRoutes(app, db)
 	routes.SetupCategoryRoutes(app, db)
+	routes.SetupAuthRoutes(app, db)
 
 	port := os.Getenv("PORT")
 	if port == "" {

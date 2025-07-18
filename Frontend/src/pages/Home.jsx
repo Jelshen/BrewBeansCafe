@@ -1,11 +1,16 @@
 import React from "react";
+
+// Import components
 import HomeCard from "../components/HomeCard.jsx";
+import Menu from "../api/menu.js";
+
+// Import library
 import { useState, useEffect } from "react";
-import fetchMenu from "../api/FetchMenu.js";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-
-const MENU_IMAGE_URL = `${import.meta.env.VITE_MENU_IMAGE_URL}/`;
+import Swal from "sweetalert2";
 
 const Home = () => {
   const [randomItems, setRandomItems] = useState([]);
@@ -20,18 +25,12 @@ const Home = () => {
   useEffect(() => {
     const fetchAndRandomize = async () => {
       try {
-        setLoading(true);
-        const menuData = await fetchMenu.getMenu();
+        const menuData = await Menu.getMenu();
         // Get 5 random items from the menu
         const randomSelection = getRandomItems(menuData, 5);
         setRandomItems(randomSelection);
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching data:", err);
-        // Fallback to dummy data if API fails
-        setRandomItems(dummyData);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -58,8 +57,21 @@ const Home = () => {
     },
   };
 
+  const pageVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  };
+
   return (
-    <div className="flex flex-wrap md:flex-row justify-center lg:p-0 p-4">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="flex flex-wrap md:flex-row justify-center lg:p-0 p-4"
+    >
       {/* Header */}
       <div className="w-full lg:w-1/1 xl:w-3/7 flex-col text-lg p-4 md:p-8 lg:p-10 xl:p-20 justify-center">
         <h2 className="text-sm md:text-lg lg:text-2xl font-medium text-[var(--color-accent)]">
@@ -81,23 +93,24 @@ const Home = () => {
           savor the perfect cup of coffee.
         </p>
 
-        <button
-          className="mt-4 border-2 rounded-full px-4 border-[var(--color-background)] 
+        <Link to="/menu">
+          <button
+            className="mt-4 border-2 rounded-full px-4 border-[var(--color-background)] 
         text-[var(--color-background)] p-2 md:hover:scale-105 active:scale-105 transition-transform duration-100"
-          onClick={() => {
-            window.location.href = "/menu";
-          }}
-        >
-          <span className="text-sm md:text-md">Check Our Menu!</span>
-        </button>
+          >
+            <span className="text-sm md:text-md">Check Our Menu!</span>
+          </button>
+        </Link>
       </div>
 
       {/* Card Section */}
       <div className="relative md:mb-0 md:flex-1 md:flex justify-center w-full lg:w-1/1 xl:w-4/7 p-4 md:p-8 lg:p-10 xl:p-20">
-        {loading ? (
-          <div className="text-center">Loading...</div>
-        ) : error ? (
-          <div className="text-center text-red-500">{error}</div>
+        {error ? (
+          <div className="flex justify-center items-center">
+            <p className="mt-8 lg:text-xl text-xs font-medium text-[var(--color-accent)]">
+              No menu items available.
+            </p>
+          </div>
         ) : (
           <Carousel
             swipeable={true}
@@ -110,7 +123,7 @@ const Home = () => {
             className="home-carousel"
             customTransition="all .5s"
             transitionDuration={500}
-            containerClass="relative w-full h-full mb-8 md:mb-0"
+            containerClass="relative w-full mb-8 md:mb-0"
             removeArrowOnDeviceType={["mobile", "tablet"]}
             dotListClass="custom-dot-list-style-home"
             renderDotsOutside={true}
@@ -119,7 +132,7 @@ const Home = () => {
             {randomItems.map((item) => (
               <HomeCard
                 key={item.menu_id}
-                image={`${MENU_IMAGE_URL}${item.picture_url}`}
+                id={item.menu_id}
                 name={item.menu_name}
                 description={item.menu_description}
               />
@@ -127,7 +140,7 @@ const Home = () => {
           </Carousel>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

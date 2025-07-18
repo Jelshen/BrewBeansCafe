@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Masonry from "react-masonry-css";
 import ImageCard from "../components/ImageCard";
 import GalleryModal from "../components/GalleryModal";
+import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 const GALLERY_URL = `${import.meta.env.VITE_GALLERY_IMAGE_URL}/`;
 
@@ -93,8 +95,21 @@ const Gallery = () => {
     640: 2, // xs breakpoint
   };
 
+  const pageVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  };
+
   return (
-    <div className="backdrop-blur-md flex flex-col items-center justify-center p-4">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="backdrop-blur-md flex flex-col items-center justify-center p-4"
+    >
       <div className="flex flex-col justify-center px-4 pt-4 md:px-8 md:pt-8 lg:px-10 lg:pt-10 xl:px-20 xl:pt-20">
         <h1 className="text-center text-2xl xl:text-4xl font-bold text-transparent bg-clip-text bg-linear-10 from-[var(--color-accent)] to-[var(--color-background)]">
           Gallery
@@ -139,7 +154,7 @@ const Gallery = () => {
           toggleModal={() => toggleModal(null)}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 

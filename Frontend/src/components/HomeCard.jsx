@@ -1,6 +1,25 @@
 import React from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-const HomeCard = ({ image, name, description }) => {
+import menu from "../api/menu.js";
+
+const HomeCard = ({ id, name, description }) => {
+  const [image_url, setImageUrl] = useState("");
+
+  useEffect(() => {
+    const fetchMenuImage = async () => {
+      try {
+        const imageUrl = await menu.getMenuImage(id);
+        setImageUrl(imageUrl);
+      } catch (error) {
+        console.error("Error fetching menu image:", error);
+      }
+    };
+
+    fetchMenuImage();
+  }, []);
+
   return (
     <div
       className="mx-auto max-w-xl w-full h-full border 
@@ -9,7 +28,7 @@ const HomeCard = ({ image, name, description }) => {
     >
       <img
         className="w-full h-48 object-cover rounded-t-lg"
-        src={image}
+        src={image_url}
         alt="Card image"
       />
 
@@ -20,17 +39,16 @@ const HomeCard = ({ image, name, description }) => {
 
         <p
           className="text-[var(--color-text)] 
-            text-xs lg:text-xs flex-grow"
+            text-xs lg:text-xs flex-grow text-wrap break-words"
         >
           {description}
         </p>
 
-        <a
-          href="/menu"
-          className="text-sm active:text-[var(--color-primary)] mt-4 text-[var(--color-accent)] hover:text-[var(--color-primary)]"
-        >
-          Learn More
-        </a>
+        <Link to="/menu">
+          <p className="text-xs active:text-[var(--color-primary)] mt-4 text-[var(--color-accent)] hover:text-[var(--color-primary)]">
+            Learn More
+          </p>
+        </Link>
       </div>
     </div>
   );

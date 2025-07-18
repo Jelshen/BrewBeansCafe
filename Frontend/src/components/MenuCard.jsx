@@ -1,18 +1,36 @@
 import React from "react";
+import { use } from "react";
+import { memo, useState, useEffect } from "react";
 
-const MENU_IMAGE_URL = `${import.meta.env.VITE_MENU_IMAGE_URL}`;
+import menu from "../api/menu.js";
 
-const MenuCard = React.memo(
-  ({ id, image, name, price, description, category }) => {
+const MenuCard = memo(
+  ({ id, name, price, description, category, noScale = false, refreshKey }) => {
+    const [image_url, setImageUrl] = useState("");
+
+    useEffect(() => {
+      const fetchMenuImage = async () => {
+        try {
+          const imageUrl = await menu.getMenuImage(id);
+          setImageUrl(imageUrl);
+        } catch (error) {
+          console.error("Error fetching menu image:", error);
+        }
+      };
+
+      fetchMenuImage();
+    }, [refreshKey]);
+
     return (
       <div>
         <div
-          className="relative bg-[var(--color-background)] rounded-xl shadow-lg 
-              overflow-hidden w-full h-68 lg:h-88
-              transition-transform hover:scale-103 duration-300"
+          className={`relative bg-[var(--color-background)] rounded-xl shadow-lg 
+              overflow-hidden w-full h-65 lg:h-88
+              transition-transform duration-300
+              ${noScale ? "" : "hover:scale-103"}`}
         >
           <img
-            src={MENU_IMAGE_URL + image}
+            src={image_url || "/Frontend/src/assets/menu/webp/americano.webp"}
             alt={name}
             className="w-full h-28 lg:h-48 object-cover"
             loading="lazy" // Lazy load images
@@ -27,7 +45,7 @@ const MenuCard = React.memo(
                 ${price.toFixed(2)}
               </span>
             </div>
-            <p className="text-[12px] md:text-[16px] text-[var(--color-text)]">
+            <p className="text-[12px] md:text-[16px] text-[var(--color-text)] break-words">
               {description}
             </p>
           </div>

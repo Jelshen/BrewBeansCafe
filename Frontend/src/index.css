@@ -5,11 +5,11 @@
   --font-display: "Montserrat", sans-serif;
 
   /* Coffee Theme Colors */
-  --color-primary: #6b4f4f; /* Rich Coffee Brown */
-  --color-accent: #dab49d; /* Warm Latte Beige */
-  --color-background: #fff8f0; /* Creamy Off-white */
-  --color-text: #3e2c2c; /* Deep Mocha */
-  --color-highlight: #a26769; /* Rosewood Pink */
+  --color-primary: #6b4f4f !important; /* Rich Coffee Brown */
+  --color-accent: #dab49d !important; /* Warm Latte Beige */
+  --color-background: #fff8f0 !important; /* Creamy Off-white */
+  --color-text: #3e2c2c !important; /* Deep Mocha */
+  --color-highlight: #a26769 !important; /* Rosewood Pink */
 
   /* Animation Easing */
   --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
@@ -20,7 +20,17 @@ body,
 html {
   width: 100%;
   height: 100%;
-  margin: 0;
+  margin: 0; /* Prevent window scrolling */
+  color-scheme: light only !important;
+}
+
+#app {
+  height: 100vh; /* Full viewport height */
+}
+
+/* Make sure the scroll container can scroll */
+#scroll-container {
+  height: 100%;
   overflow-x: hidden;
 }
 
@@ -41,9 +51,9 @@ html {
   border-radius: 50%;
 }
 
-@media (min-width: 1800px) {
+@media (min-width: 1200px) {
   .custom-dot-list-style-home {
-    padding-bottom: 5% !important;
+    padding-bottom: 10% !important;
   }
 }
 

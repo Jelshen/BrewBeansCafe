@@ -3,6 +3,7 @@ import CustomerTestimonial from "../components/CustomerTestimonial.jsx";
 
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import { motion } from "framer-motion";
 
 const About = () => {
   const responsive = {
@@ -64,8 +65,21 @@ const About = () => {
     },
   ];
 
+  const pageVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  };
+
   return (
-    <div className="scroll smooth text-[var(--color-accent)] backdrop-blur-lg p-4 md:p-8">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="scroll smooth text-[var(--color-accent)] backdrop-blur-lg p-4 md:p-8"
+    >
       {/* Our Story Section */}
       <div className="flex flex-col xl:flex-row xl:justify-center xl:p-8">
         {/* Paragraph section */}
@@ -163,7 +177,7 @@ const About = () => {
           </Carousel>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
